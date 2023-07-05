@@ -12,6 +12,8 @@ dependencies:
   flutter_svg: ^1.0.0
   cupertino_icons: ^1.0.2
   printer: ^0.0.5
+  win32: ^5.0.5
+  ffi: ^2.0.2
 
 dev_dependencies:
   flutter_test:
