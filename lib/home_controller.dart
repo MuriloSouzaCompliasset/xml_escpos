@@ -1,9 +1,12 @@
 import 'package:danfe/danfe.dart';
+import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'dart:io';
 import 'custom_printer.dart';
 import 'raw.dart';
+import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'package:win32/win32.dart';
 
 class HomeController {
   Danfe? parseXml(String xml) {
@@ -38,10 +41,9 @@ class HomeController {
       const openCashDrawer = '\x1b\x70\x00';
 
       using((Arena alloc) {
-        final printer = RawPrinter('EPSON TM-T20II Receipt', alloc);
+        final printer = RawPrinter('EPSON TM-T20 Receipt', alloc);
         final data = <String>[
           ..._dados.map((byte) => String.fromCharCode(byte)),
-          openCashDrawer,
         ];
         if (printer.printLines(data)) {
           print('Success!');
