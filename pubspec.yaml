@@ -9,11 +9,10 @@ dependencies:
     sdk: flutter
   danfe: ^0.0.14
   esc_pos_printer: ^4.1.0
-  flutter_svg: ^1.0.0
   cupertino_icons: ^1.0.2
-  printer: ^0.0.5
   win32: ^5.0.5
   ffi: ^2.0.2
+  esc_pos_utils: ^1.1.0
 
 dev_dependencies:
   flutter_test:

@@ -78,18 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               onPressed: () async {
                                 final profile = await CapabilityProfile.load();
 
-                                await controller.printDefault(
-                                    danfe: _dadosDanfe,
-                                    paper: PaperSize.mm80,
-                                    profile: profile);
-                              },
-                              child: const Text('Imprimir nota'))),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                final profile = await CapabilityProfile.load();
-
                                 await controller.printCustomLayout(
                                     danfe: _dadosDanfe,
                                     paper: PaperSize.mm80,

@@ -1,13 +1,6 @@
-// Sends RAW data (string or hex sequences) directly to the printer
-
-// Example taken from:
-// https://learn.microsoft.com/windows/win32/printdocs/sending-data-directly-to-a-printer
-
 import 'dart:ffi';
-
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
-
 class RawPrinter {
   final String printerName;
   final Arena alloc;
@@ -21,24 +14,21 @@ class RawPrinter {
     final pPrinterName = printerName.toNativeUtf16(allocator: alloc);
     final phPrinter = alloc<HANDLE>();
 
-    // https://learn.microsoft.com/windows/win32/printdocs/openprinter
     var fSuccess = OpenPrinter(pPrinterName, phPrinter, nullptr);
     if (fSuccess == 0) {
       final error = GetLastError();
       throw Exception('OpenPrint error, status: $fSuccess, error: $error');
     }
 
-    // https://learn.microsoft.com/windows/win32/printdocs/doc-info-1
     final pDocInfo = alloc<DOC_INFO_1>()
       ..ref.pDocName = printerName.toNativeUtf16(allocator: alloc)
       ..ref.pDatatype =
-          dataType.toNativeUtf16(allocator: alloc) // RAW, TEXT or XPS_PASS
+          dataType.toNativeUtf16(allocator: alloc) 
       ..ref.pOutputFile = nullptr;
 
-    //https://learn.microsoft.com/windows/win32/printdocs/startdocprinter
     fSuccess = StartDocPrinter(
         phPrinter.value,
-        1, // Version of the structure to which pDocInfo points.
+        1,
         pDocInfo);
     if (fSuccess == 0) {
       final error = GetLastError();
@@ -50,7 +40,6 @@ class RawPrinter {
   }
 
   bool _startRawPrintPage(Pointer<HANDLE> phPrinter) {
-    //https://learn.microsoft.com/windows/win32/printdocs/startpageprinter
     return StartPagePrinter(phPrinter.value) != 0;
   }
 
@@ -67,7 +56,6 @@ class RawPrinter {
     final cWritten = alloc<DWORD>();
     final data = dataToPrint.toNativeUtf8(allocator: alloc);
 
-    // https://learn.microsoft.com/windows/win32/printdocs/writeprinter
     final result =
         WritePrinter(phPrinter.value, data, dataToPrint.length, cWritten);
 
