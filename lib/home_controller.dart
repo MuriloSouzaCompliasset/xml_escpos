@@ -38,13 +38,9 @@ class HomeController {
         print(result.stderr);
       }
     } else if (Platform.isWindows) {
-      const openCashDrawer = '\x1b\x70\x00';
-
       using((Arena alloc) {
-        final printer = RawPrinter('EPSON TM-T20 Receipt', alloc);
-        final data = <String>[
-          ..._dados.map((byte) => String.fromCharCode(byte)),
-        ];
+       final printer = RawPrinter('EPSON TM-T20 Receipt', Arena());
+        final data = [_dados];
         if (printer.printLines(data)) {
           print('Success!');
         }

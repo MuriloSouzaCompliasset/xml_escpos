@@ -1,6 +1,8 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
+
 class RawPrinter {
   final String printerName;
   final Arena alloc;
@@ -22,14 +24,10 @@ class RawPrinter {
 
     final pDocInfo = alloc<DOC_INFO_1>()
       ..ref.pDocName = printerName.toNativeUtf16(allocator: alloc)
-      ..ref.pDatatype =
-          dataType.toNativeUtf16(allocator: alloc) 
+      ..ref.pDatatype = dataType.toNativeUtf16(allocator: alloc)
       ..ref.pOutputFile = nullptr;
 
-    fSuccess = StartDocPrinter(
-        phPrinter.value,
-        1,
-        pDocInfo);
+    fSuccess = StartDocPrinter(phPrinter.value, 1, pDocInfo);
     if (fSuccess == 0) {
       final error = GetLastError();
       throw Exception(
@@ -52,13 +50,16 @@ class RawPrinter {
         ClosePrinter(phPrinter.value) != 0;
   }
 
-  bool _printRawData(Pointer<HANDLE> phPrinter, String dataToPrint) {
+  bool _printRawData(Pointer<HANDLE> phPrinter, List<int> dataToPrint) {
     final cWritten = alloc<DWORD>();
-    final data = dataToPrint.toNativeUtf8(allocator: alloc);
+    final data = calloc<Int8>(dataToPrint.length);
 
+    for (var i = 0; i < dataToPrint.length; i++) {
+      data.elementAt(i).value = dataToPrint[i];
+    }
     final result =
         WritePrinter(phPrinter.value, data, dataToPrint.length, cWritten);
-
+    calloc.free(data);
     if (dataToPrint.length != cWritten.value) {
       final error = GetLastError();
       throw Exception('WritePrinter error, status: $result, error: $error');
@@ -67,13 +68,11 @@ class RawPrinter {
     return result != 0;
   }
 
-  bool printLines(List<String> data) {
+  bool printLines(List<List<int>> data) {
     var res = false;
-
     if (data.isEmpty) {
       return res;
     }
-
     final printerHandle = _startRawPrintJob(
         printerName: printerName,
         documentTitle: 'My document',
